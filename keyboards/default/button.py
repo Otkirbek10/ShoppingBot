@@ -1,8 +1,14 @@
 from aiogram.types import ReplyKeyboardMarkup,KeyboardButton
 
-start_button = ReplyKeyboardMarkup(
+cancel = '🚫 Bekor qilish'
+back = '🔙 Orqaga'
+
+
+
+back_markup = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Menu🍗🍖')]
+        [KeyboardButton(text=back)]
     ],
-    resize_keyboard= True
+    resize_keyboard=True,
+    selective=True
 )

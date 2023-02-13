@@ -2,7 +2,7 @@ import sqlite3
 
 
 class Database:
-    def __init__(self, path_to_db="main.db"):
+    def __init__(self, path_to_db="db.sqlite3"):
         self.path_to_db = path_to_db
 
     @property
@@ -27,17 +27,17 @@ class Database:
         connection.close()
         return data
 
-    def create_table_users(self):
-        sql = """
-        CREATE TABLE Users (
-            id int NOT NULL,
-            Name varchar(255) NOT NULL,
-            email varchar(255),
-            language varchar(3),
-            PRIMARY KEY (id)
-            );
-"""
-        self.execute(sql, commit=True)
+#     def create_table_users(self):
+#         sql = """
+#         CREATE TABLE Users (
+#             id int NOT NULL,
+#             Name varchar(255) NOT NULL,
+#             email varchar(255),
+#             language varchar(3),
+#             PRIMARY KEY (id)
+#             );
+# """
+#         self.execute(sql, commit=True)
 
     @staticmethod
     def format_args(sql, parameters: dict):
@@ -46,29 +46,59 @@ class Database:
         ])
         return sql, tuple(parameters.values())
 
-    def add_user(self, id: int, name: str, email: str = None, language: str = 'uz'):
+    def add_user(self,tg_id: int, name: str,user_name = str):
         # SQL_EXAMPLE = "INSERT INTO Users(id, Name, email) VALUES(1, 'John', 'John@gmail.com')"
 
         sql = """
-        INSERT INTO Users(id, Name, email, language) VALUES(?, ?, ?, ?)
+        INSERT INTO mod_user(tg_id, name,user_name) VALUES(?, ?, ?)
         """
-        self.execute(sql, parameters=(id, name, email, language), commit=True)
+        self.execute(sql, parameters=(tg_id, name,user_name), commit=True)
+
+    def add_category(self,name: str):
+
+        sql = """
+        INSERT INTO mod_category(name) VALUES(?)
+        """
+        self.execute(sql, parameters=(name,), commit=True)
+
+    def add_product(self,name: str,description:str,photo: str,price: int):
+
+        sql = """
+        INSERT INTO mod_product( name,description,photo,price) VALUES(?, ?, ?,?)
+        """
+        self.execute(sql, parameters=(name,description,photo,price), commit=True)
+
+    def select_product(self, **kwargs):
+        sql = "SELECT * FROM mod_product WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+
+        return self.execute(sql, parameters=parameters, fetchall=True)
 
     def select_all_users(self):
         sql = """
-        SELECT * FROM Users
+        SELECT * FROM mod_user
         """
         return self.execute(sql, fetchall=True)
 
+    def select_all_categories(self):
+        sql = """
+        SELECT * FROM mod_category
+        """
+        return self.execute(sql, fetchall=True)
+
+    def delete_category(self,id:int):
+        sql = "DELETE FROM mod_category WHERE id=? "
+        return self.execute(sql, (id,), commit=True)
+
     def select_user(self, **kwargs):
         # SQL_EXAMPLE = "SELECT * FROM Users where id=1 AND Name='John'"
-        sql = "SELECT * FROM Users WHERE "
+        sql = "SELECT * FROM mod_user WHERE "
         sql, parameters = self.format_args(sql, kwargs)
 
         return self.execute(sql, parameters=parameters, fetchone=True)
 
     def count_users(self):
-        return self.execute("SELECT COUNT(*) FROM Users;", fetchone=True)
+        return self.execute("SELECT COUNT(*) FROM mod_user;", fetchone=True)
 
     def update_user_email(self, email, id):
         # SQL_EXAMPLE = "UPDATE Users SET email=mail@gmail.com WHERE id=12345"

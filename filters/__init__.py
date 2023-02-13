@@ -1,7 +1,9 @@
 from aiogram import Dispatcher
-from loader import dp
+from .is_admin import IsAdmin
+from .is_user import IsUser
 #From .is_admin import AdminFilter
 
-if __name__ == 'filters':
-    #dp.filters_factory.bind(is_admin)
-    pass
+def setup(dp: Dispatcher):
+    dp.filters_factory.bind(IsAdmin, event_handlers=[dp.message_handlers])
+    dp.filters_factory.bind(IsUser, event_handlers=[dp.message_handlers])
+
