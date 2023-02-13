@@ -118,7 +118,7 @@ async def description_back(message:Message,state:FSMContext):
 @dp.message_handler(state=ProductState.description,user_id=ADMINS)
 async def product_description(message:Message,state:FSMContext):
 
-    async with state.proxy as data:
+    async with state.proxy() as data:
         data['description'] = message.text
 
     await ProductState.next()
@@ -128,7 +128,7 @@ async def product_description(message:Message,state:FSMContext):
 async def text_photo(message:Message,state:FSMContext):
     if message.text == back:
         await ProductState.description.set()
-        async with state.proxy as data:
+        async with state.proxy() as data:
             await message.answer(f"<i>{data['description']}</i> ni o'zgartirmoqchimisiz?",reply_markup=back_markup)
     else:
         await message.answer("Iltimos mahsulot rasmini yuboring!!")
@@ -137,7 +137,47 @@ async def text_photo(message:Message,state:FSMContext):
 async def get_product_photo(message:Message,state:FSMContext):
     file_id = message.photo[-1].file_id
     file_info = await bot.get_file(file_id)
-    downloaded_file = (await bot.download_file(file_info.file_path)).read()
+    downloaded_photo = (await bot.download_file(file_info.file_path)).read()
+
+    async with state.proxy() as data:
+        data['photo'] = downloaded_photo
+
+    await message.answer('Mahsulotnig narxi?',reply_markup=back_markup)
+    await ProductState.next()
+
+
+@dp.message_handler(lambda message: not message.text.isdigit(),user_id=ADMINS, state=ProductState.price)
+async def check_price(message:Message,state:FSMContext):
+    if message.text == back:
+        await ProductState.photo.set()
+        async with state.proxy() as data:
+            await message.answer("Mahsulot rasmini o'zgartirmoqchmisiz?",reply_markup=back_markup)
+
+    else:
+        await message.answer('Iltimos mahsulot rasmini son bilan kiriting!')
+
+@dp.message_handler(lambda message: message.text.isdigit(),user_id=ADMINS, state=ProductState.price)
+async def get_price(message:Message,state:FSMContext):
+
+    async with state.proxy() as data:
+        data['price'] = message.text
+
+        
+        name = data['name']
+        description = data['description']
+        photo = data['photo']
+        price = data['price']
+
+        await ProductState.next()
+        text = f'<b>{name}</b>\n\n{description}\n\nЦена: {price} рублей.'
+
+        # markup = check_markup()
+
+        await message.answer_photo(photo=photo,
+                                   caption=text,)
+
+
+
 
 
 # delete product
