@@ -9,7 +9,6 @@ from data.config import ADMINS
 from aiogram.types.chat import ChatActions
 from aiogram.types import InlineKeyboardMarkup,InlineKeyboardButton,Message,CallbackQuery,ReplyKeyboardMarkup,ReplyKeyboardRemove,ContentType
 from states.state import CategoryState,ProductState
-from hashlib import md5
 
 category_cb = CallbackData('category', 'id', 'action')
 product_cb = CallbackData('product', 'id', 'action')
@@ -21,8 +20,8 @@ delete_category = "🗑️ Kategoriyani o'chirish"
 
 category = db.select_all_categories()
 
-@dp.message_handler(text=settings,user_id = ADMINS)
-async def add_menu(message:Message):
+@dp.message_handler(IsAdmin(),text=settings)
+async def process_settings(message:Message):
     markup = InlineKeyboardMarkup()
 
     for id,name in category:
@@ -33,7 +32,7 @@ async def add_menu(message:Message):
 
 
 
-@dp.callback_query_handler(category_cb.filter(action='watch'),user_id = ADMINS)
+@dp.callback_query_handler(IsAdmin(),category_cb.filter(action='watch'))
 async def category_callback_handler(query: CallbackQuery, callback_data: dict, state: FSMContext):
     category_id = callback_data['id']
 
@@ -44,40 +43,39 @@ async def category_callback_handler(query: CallbackQuery, callback_data: dict, s
     await view_products(query.message, products, category_id)
 
 
-@dp.callback_query_handler(text='add_category',user_id = ADMINS)
+@dp.callback_query_handler(IsAdmin(),text='add_category',state='*')
 async def add_cat(call:types.CallbackQuery):
     await call.message.delete()
     await call.message.answer('Kategoriya nomi?')
     await CategoryState.name.set()
 
-@dp.message_handler(state=CategoryState.name,user_id = ADMINS)
+@dp.message_handler(IsAdmin(),state=CategoryState.name)
 async def cat_name(message:Message, state: FSMContext):
     category_name = message.text
-    cats = db.add_category(name=category_name)
+    db.add_category(name=category_name)
+    # markup = InlineKeyboardMarkup()
+    # ccc = db.select_all_categories()
+    # for id,name in ccc:
+    #     markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
 
-    markup = InlineKeyboardMarkup()
-    for id,name in category:
-        # markup.add(InlineKeyboardButton(str(i[1]),callback_data=str(i[0])))
-        markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
-
-    markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
+    # markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
 
     await state.finish()
-    await add_menu(message)
+    await process_settings(message)
 
 
-@dp.message_handler(text=delete_category,user_id=ADMINS)
-async def delete_categorys(message:Message,state:FSMContext):
+@dp.message_handler(IsAdmin(),text=delete_category)
+async def delete_categorys(message: types.Message,state:FSMContext):
     async with state.proxy() as data:
         if 'category_index' in data.keys():
             id = data['category_index']
             delete = db.delete_category(id=id)
-            await message.answer('Tayyor!!',reply_markup=ReplyKeyboardRemove())
-            await add_menu(message)
+            await message.answer("Kategoriya o'chirildi!!",reply_markup=ReplyKeyboardRemove())
+            await process_settings(message)
 
-# ADD PRODUCT
 
-@dp.message_handler(text=add_product,user_id = ADMINS)
+
+@dp.message_handler(IsAdmin(),text=add_product)
 async def add_product_handler(message:Message):
     await ProductState.name.set()
 
@@ -86,18 +84,18 @@ async def add_product_handler(message:Message):
     await message.answer('Mahsulot nomini kiriting?',reply_markup=markup)
 
 
-@dp.message_handler(text=cancel,user_id=ADMINS,state=ProductState.name)
+@dp.message_handler(IsAdmin(),text=cancel,state=ProductState.name)
 async def name_cancel(message:Message,state:FSMContext):
     await message.answer('Bekor qilindi!',reply_markup=ReplyKeyboardRemove())
     await state.finish()
 
-    await add_menu(message)
+    await process_settings(message)
 
-@dp.message_handler(user_id=ADMINS, text=back, state=ProductState.name)
+@dp.message_handler(IsAdmin(),text=back, state=ProductState.name)
 async def process_title_back(message: Message, state: FSMContext):
     await add_product_handler(message)
 
-@dp.message_handler(state=ProductState.name,user_id=ADMINS)
+@dp.message_handler(IsAdmin(),state=ProductState.name)
 async def product_name(message:Message,state:FSMContext):
 
     async with state.proxy() as data:
@@ -107,7 +105,7 @@ async def product_name(message:Message,state:FSMContext):
     await message.answer("Mahsulotning tavsifi?",reply_markup=back_markup)
 
 
-@dp.message_handler(text=back,user_id=ADMINS,state=ProductState.description)
+@dp.message_handler(IsAdmin(),text=back,state=ProductState.description)
 async def description_back(message:Message,state:FSMContext):
     await ProductState.name.set()
 
@@ -115,7 +113,7 @@ async def description_back(message:Message,state:FSMContext):
         await message.answer(f"<i>{data['name']}</i> nomini o'zgartirmoqchimisiz?",reply_markup=back_markup)
 
 
-@dp.message_handler(state=ProductState.description,user_id=ADMINS)
+@dp.message_handler(IsAdmin(),state=ProductState.description)
 async def product_description(message:Message,state:FSMContext):
 
     async with state.proxy() as data:
@@ -124,7 +122,7 @@ async def product_description(message:Message,state:FSMContext):
     await ProductState.next()
     await message.answer("Mahsulot rasmi?",reply_markup=back_markup)
 
-@dp.message_handler(user_id=ADMINS,content_types=ContentType.TEXT,state=ProductState.photo)
+@dp.message_handler(IsAdmin(),content_types=ContentType.TEXT,state=ProductState.photo)
 async def text_photo(message:Message,state:FSMContext):
     if message.text == back:
         await ProductState.description.set()
@@ -133,20 +131,20 @@ async def text_photo(message:Message,state:FSMContext):
     else:
         await message.answer("Iltimos mahsulot rasmini yuboring!!")
 
-@dp.message_handler(user_id=ADMINS,content_types=ContentType.PHOTO,state=ProductState.photo)
+@dp.message_handler(IsAdmin(),content_types=ContentType.PHOTO,state=ProductState.photo)
 async def get_product_photo(message:Message,state:FSMContext):
     file_id = message.photo[-1].file_id
-    file_info = await bot.get_file(file_id)
-    downloaded_photo = (await bot.download_file(file_info.file_path)).read()
+    # file_info = await bot.get_file(file_id)
+    # downloaded_photo = (await bot.download_file(file_info.file_path)).read()
 
     async with state.proxy() as data:
-        data['photo'] = downloaded_photo
+        data['photo'] = file_id
 
     await message.answer('Mahsulotnig narxi?',reply_markup=back_markup)
     await ProductState.next()
 
 
-@dp.message_handler(lambda message: not message.text.isdigit(),user_id=ADMINS, state=ProductState.price)
+@dp.message_handler(IsAdmin(),lambda message: not message.text.isdigit(), state=ProductState.price)
 async def check_price(message:Message,state:FSMContext):
     if message.text == back:
         await ProductState.photo.set()
@@ -154,9 +152,9 @@ async def check_price(message:Message,state:FSMContext):
             await message.answer("Mahsulot rasmini o'zgartirmoqchmisiz?",reply_markup=back_markup)
 
     else:
-        await message.answer('Iltimos mahsulot rasmini son bilan kiriting!')
+        await message.answer('Iltimos mahsulot narxini son bilan kiriting!')
 
-@dp.message_handler(lambda message: message.text.isdigit(),user_id=ADMINS, state=ProductState.price)
+@dp.message_handler(IsAdmin(),lambda message: message.text.isdigit(), state=ProductState.price)
 async def get_price(message:Message,state:FSMContext):
 
     async with state.proxy() as data:
@@ -169,27 +167,52 @@ async def get_price(message:Message,state:FSMContext):
         price = data['price']
 
         await ProductState.next()
-        text = f'<b>{name}</b>\n\n{description}\n\nЦена: {price} рублей.'
-
-        # markup = check_markup()
+        msg = f"<i>{name}</i>\n\n{description}\n\nNarxi: {price} so'm."
 
         await message.answer_photo(photo=photo,
-                                   caption=text,)
+                                   caption=msg,
+                                   reply_markup=conf_markup())
+
+                                
+
+@dp.message_handler(IsAdmin(),lambda message: message.text not in [back,admin_confirm],state=ProductState.confirm)
+async def other_message(message:Message,state:FSMContext):
+    await message.answer("Iltimos quyidagilardan birini tanlang!👇")
+
+
+@dp.message_handler(IsAdmin(),text=back,state=ProductState.confirm)
+async def back_price(message:Message,state:FSMContext):
+    await ProductState.price.set()
+
+    async with state.proxy() as data:
+        msg = f"<i>{data['price']}</i> ni o'zgartirmoqchimisiz?"
+
+    await message.answer(msg,reply_markup=back_markup)
+
+@dp.message_handler(IsAdmin(),text=admin_confirm,state=ProductState.confirm)
+async def conf_product(message:Message,state:FSMContext):
+
+    async with state.proxy() as data:
+        name = data['name']
+        description = data['description']
+        photo = data['photo']
+        price = data['price']
+        id = data['category_index']
+
+    prod = db.add_product(name=name,description=description,photo=photo,price=price,category_id=id)
+    await message.answer("Mahsulot qo'shildi!!",reply_markup=ReplyKeyboardRemove())
+    await state.finish()
+    await process_settings(message)
 
 
 
+@dp.callback_query_handler(IsAdmin(),product_cb.filter(action='delete'))
+async def delete_product_callback_handler(query: CallbackQuery, callback_data: dict):
 
-
-# delete product
-
-
-# @dp.callback_query_handler(IsAdmin(), product_cb.filter(action='delete'))
-# async def delete_product_callback_handler(query: CallbackQuery, callback_data: dict):
-
-#     product_idx = callback_data['id']
-#     db.query('DELETE FROM products WHERE idx=?', (product_idx,))
-#     await query.answer('Удалено!')
-#     await query.message.delete()
+    product_id = callback_data['id']
+    aa = db.delete_product(id=product_id)
+    await query.answer("Mahsulot o'chirildi!!")
+    await query.message.delete()
 
 
 
@@ -197,16 +220,15 @@ async def view_products(msg, products, category_id):
 
     await bot.send_chat_action(msg.chat.id, ChatActions.TYPING)
 
-    for idx, title, image, body, price, tag  in products:
+    for id, name, photo, description, price,cc  in products:
 
-        text = f"<b>{title}</b>\n\n{body}\n\nNarxi: {price} so'm."
+        temp = f"<b>{name}</b>\n\n{description}\n\nNarxi: {price} so'm."
 
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton(
-            "🗑️ O'chirish ", callback_data=product_cb.new(id=idx, action='delete')))
+        markup.add(InlineKeyboardButton("🗑️ O'chirish ", callback_data=product_cb.new(id=id, action='delete')))
 
-        await msg.answer_photo(photo='https://ibb.co/q7Vf1Fr',
-                             caption=text,
+        await msg.answer_photo(photo=photo,
+                             caption=temp,
                              reply_markup=markup)
 
     markup = ReplyKeyboardMarkup(resize_keyboard=True)

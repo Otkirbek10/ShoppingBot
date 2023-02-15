@@ -61,12 +61,16 @@ class Database:
         """
         self.execute(sql, parameters=(name,), commit=True)
 
-    def add_product(self,name: str,description:str,photo: str,price: int):
+    def add_product(self,name: str,description:str,photo: str,price: int,category_id: int):
 
         sql = """
-        INSERT INTO mod_product( name,description,photo,price) VALUES(?, ?, ?,?)
+        INSERT INTO mod_product( name,description,photo,price,category_id) VALUES(?, ?, ?,?,?)
         """
-        self.execute(sql, parameters=(name,description,photo,price), commit=True)
+        self.execute(sql, parameters=(name,description,photo,price,category_id), commit=True)
+
+    def delete_product(self,id:int):
+        sql = 'DELETE FROM mod_product WHERE id=?'
+        return self.execute(sql, (id,), commit=True)
 
     def select_product(self, **kwargs):
         sql = "SELECT * FROM mod_product WHERE "

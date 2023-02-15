@@ -1,1 +1,4 @@
-from . import add
+
+from .add import dp
+
+__all__ = ['dp']
