@@ -9,6 +9,7 @@ from data.config import ADMINS
 from aiogram.types.chat import ChatActions
 from aiogram.types import InlineKeyboardMarkup,InlineKeyboardButton,Message,CallbackQuery,ReplyKeyboardMarkup,ReplyKeyboardRemove,ContentType
 from states.state import CategoryState,ProductState
+from hashlib import md5
 
 category_cb = CallbackData('category', 'id', 'action')
 product_cb = CallbackData('product', 'id', 'action')
@@ -23,7 +24,7 @@ category = db.select_all_categories()
 @dp.message_handler(IsAdmin(),text=settings)
 async def process_settings(message:Message):
     markup = InlineKeyboardMarkup()
-
+    global category
     for id,name in category:
         markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
 
@@ -53,12 +54,12 @@ async def add_cat(call:types.CallbackQuery):
 async def cat_name(message:Message, state: FSMContext):
     category_name = message.text
     db.add_category(name=category_name)
-    # markup = InlineKeyboardMarkup()
-    # ccc = db.select_all_categories()
-    # for id,name in ccc:
-    #     markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
+    markup = InlineKeyboardMarkup()
+    ccc = db.select_all_categories()
+    for id,name in ccc:
+        markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
 
-    # markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
+    markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
 
     await state.finish()
     await process_settings(message)
