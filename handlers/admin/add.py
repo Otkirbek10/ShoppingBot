@@ -25,7 +25,7 @@ category = db.select_all_categories()
 async def process_settings(message:Message):
     markup = InlineKeyboardMarkup()
     global category
-    for id,name in category:
+    for id,name in db.select_all_categories():
         markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
 
     markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
