@@ -70,7 +70,8 @@ async def delete_categorys(message: types.Message,state:FSMContext):
     async with state.proxy() as data:
         if 'category_index' in data.keys():
             id = data['category_index']
-            delete = db.delete_category(id=id)
+            db.delete_product_for_category(category_id=id)
+            db.delete_category(id=id)
             await message.answer("Kategoriya o'chirildi!!",reply_markup=ReplyKeyboardRemove())
             await process_settings(message)
 

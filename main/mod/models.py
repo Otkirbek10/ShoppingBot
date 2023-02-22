@@ -23,3 +23,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class Cart(models.Model):
+    tg_id = models.IntegerField()
+    product = models.IntegerField()
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.product

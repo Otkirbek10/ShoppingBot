@@ -68,15 +68,77 @@ class Database:
         """
         self.execute(sql, parameters=(name,description,photo,price,category_id), commit=True)
 
+    def add_to_cart(self,tg_id: int,product:id,quantity:int):
+
+        sql = """
+        INSERT INTO mod_cart(tg_id,product,quantity) VALUES(?,?,?)
+        """
+        self.execute(sql, parameters=(tg_id,product,quantity), commit=True)
+
+    def update_cart(self, tg_id: int, product: int, quantity: int):
+        sql = "UPDATE mod_cart SET quantity=? WHERE tg_id=? AND product=?"
+        return self.execute(sql, (quantity, tg_id, product), commit=True)
+
     def delete_product(self,id:int):
         sql = 'DELETE FROM mod_product WHERE id=?'
         return self.execute(sql, (id,), commit=True)
 
+    def delete_product_for_category(self,category_id:int):
+        sql = 'DELETE FROM mod_product WHERE category_id=?'
+        return self.execute(sql, (category_id,), commit=True)
+
+    def delete_from_cart(self,product:int):
+        sql = 'DELETE FROM mod_cart WHERE product=? '
+        return self.execute(sql, (product,), commit=True)
+
+    def delete_from_cart_foruser(self,tg_id:int,product:int):
+        sql = 'DELETE FROM mod_cart WHERE tg_id=? AND product=? '
+        return self.execute(sql, (tg_id,product), commit=True)
+
+    # def select_products(self,**kwargs):
+    #     # sql = "SELECT * FROM mod_product m_p WHERE category_id=? AND id NOT IN (SELECT product,quantity FROM mod_cart WHERE tg_id=? )"
+    #     # sql = 'SELECT * FROM mod_product product  LEFT JOIN mod_cart cart ON cart.product = product.id WHERE category_id = ? AND cart.tg_id = ?'
+    #     sql = 'SELECT * FROM mod_product WHERE id NOT IN (SELECT * FROM mod_cart WHERE);'
+    #     sql, parameters = self.format_args(sql,kwargs)
+
+    #     return self.execute(sql, parameters=parameters, fetchall=True)
+
+
     def select_product(self, **kwargs):
+        # sql = "SELECT * FROM mod_product WHERE id NOT IN (SELECT product FROM mod_cart WHERE tg_id=?) AND category_id=? "    
         sql = "SELECT * FROM mod_product WHERE "
         sql, parameters = self.format_args(sql, kwargs)
 
         return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def select_cart_product(self, **kwargs):
+        sql = "SELECT product FROM mod_cart WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
+    # def select_products(self, **kwargs):
+    #     sql = '''SELECT * FROM mod_product product
+    # WHERE product.category_id = (SELECT id FROM mod_category WHERE id=?) 
+    # AND product.id NOT IN (SELECT product FROM mod_cart WHERE tg_id = ?)'''
+    #     # sql = 'SELECT * FROM mod_product m_p LEFT JOIN mod_cart m_c ON m_c.product = m_p.id WHERE category_id = ? AND m_c.tg_id = ? AND m_c.product IS NOT NULL'
+    #     # sql = ('SELECT * FROM mod_product product WHERE product.category_id = (SELECT id FROM mod_category WHERE id=?) AND product.id NOT IN (SELECT id FROM cart WHERE tg_id = ?')
+    #     sql, parameters = self.format_args(sql, kwargs)
+
+        # return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def select_for_cart(self, **kwargs):
+        sql = "SELECT * FROM mod_product WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+
+        return self.execute(sql, parameters=parameters, fetchone=True)
+
+    def select_all_products(self):
+        sql = """
+        SELECT * FROM mod_product
+        """
+        return self.execute(sql, fetchall=True)
+
 
     def select_all_users(self):
         sql = """
@@ -89,6 +151,12 @@ class Database:
         SELECT * FROM mod_category
         """
         return self.execute(sql, fetchall=True)
+
+    def select_cart(self, **kwargs):
+        sql = "SELECT * FROM mod_cart WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+
+        return self.execute(sql, parameters=parameters, fetchall=True)
 
     def delete_category(self,id:int):
         sql = "DELETE FROM mod_category WHERE id=? "
@@ -115,6 +183,7 @@ class Database:
     def delete_users(self):
         self.execute("DELETE FROM Users WHERE TRUE", commit=True)
 
+    
 
 def logger(statement):
     print(f"""
@@ -123,3 +192,4 @@ Executing:
 {statement}
 _____________________________________________________
 """)
+
