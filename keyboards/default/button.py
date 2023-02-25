@@ -3,6 +3,8 @@ from aiogram.types import ReplyKeyboardMarkup,KeyboardButton
 cancel = '🚫 Bekor qilish'
 back = '🔙 Orqaga'
 admin_confirm = "✅ Hammasi to'gri"
+confirm_message = "✅ Buyurtmani tasdiqlash"
+share_contact = 'Telefon raqamni yuborish'
 
 menu  = '📖 Меню'
 cart = '🛒 Корзина'
@@ -25,8 +27,34 @@ back_markup = ReplyKeyboardMarkup(
     selective=True
 )
 
+back_loco = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='📍 Lokatsiyani yuborish',request_location=True)],
+        [KeyboardButton(text='🔙 Orqaga')],
+    ],
+    resize_keyboard=True,
+    selective=True
+)
+
+
+
+contact_p = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='📞 Phone',request_contact=True)]
+    ],
+    resize_keyboard=True,
+    selective=True
+)
+
 def conf_markup():
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
     markup.row(back, admin_confirm)
+    return markup
+
+def confirm_markup():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add(confirm_message)
+    markup.add(back)
+
     return markup
 

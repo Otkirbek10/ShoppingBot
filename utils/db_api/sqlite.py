@@ -75,6 +75,13 @@ class Database:
         """
         self.execute(sql, parameters=(tg_id,product,quantity), commit=True)
 
+    def add_to_order(self,tg_id:int,name:str,phone:int,product:str):
+
+        sql = """
+        INSERT INTO mod_orders(tg_id,name,phone,product) VALUES(?,?,?,?)
+        """
+        self.execute(sql,parameters=(tg_id,name,phone,product),commit=True)
+
     def update_cart(self, tg_id: int, product: int, quantity: int):
         sql = "UPDATE mod_cart SET quantity=? WHERE tg_id=? AND product=?"
         return self.execute(sql, (quantity, tg_id, product), commit=True)
@@ -94,18 +101,19 @@ class Database:
     def delete_from_cart_foruser(self,tg_id:int,product:int):
         sql = 'DELETE FROM mod_cart WHERE tg_id=? AND product=? '
         return self.execute(sql, (tg_id,product), commit=True)
+    
+    
+    def delete_confirm_cart(self,**kwargs):
+        sql = 'DELETE FROM mod_cart WHERE '
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, commit=True)
 
-    # def select_products(self,**kwargs):
-    #     # sql = "SELECT * FROM mod_product m_p WHERE category_id=? AND id NOT IN (SELECT product,quantity FROM mod_cart WHERE tg_id=? )"
-    #     # sql = 'SELECT * FROM mod_product product  LEFT JOIN mod_cart cart ON cart.product = product.id WHERE category_id = ? AND cart.tg_id = ?'
-    #     sql = 'SELECT * FROM mod_product WHERE id NOT IN (SELECT * FROM mod_cart WHERE);'
-    #     sql, parameters = self.format_args(sql,kwargs)
-
-    #     return self.execute(sql, parameters=parameters, fetchall=True)
+    
 
 
-    def select_product(self, **kwargs):
-        # sql = "SELECT * FROM mod_product WHERE id NOT IN (SELECT product FROM mod_cart WHERE tg_id=?) AND category_id=? "    
+
+
+    def select_product(self, **kwargs):    
         sql = "SELECT * FROM mod_product WHERE "
         sql, parameters = self.format_args(sql, kwargs)
 

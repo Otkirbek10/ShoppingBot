@@ -34,22 +34,6 @@ async def set_products(query: CallbackQuery, callback_data: dict):
     AND category_id=? ''',(tg_id,callback_data['id']))
     products = product.fetchall()
 
-    # in_cart = db.select_cart_product(tg_id=tg_id)
-    # # aaaa = db.select_cart(tg_id=tg_id)
-
-    # if products[0] in aaaa:
-
-
-    # products = db.fetchall('''SELECT * FROM mod_product product
-    # WHERE product.category_id = (SELECT id FROM mod_category WHERE id=?) 
-    # AND product.category_id NOT IN (SELECT product FROM cart WHERE tg_id = ?)''',
-    #                        (callback_data['id'], query.message.chat.id))
-    # aa = db.select_all_products()
-    # cc = db.select_cart(tg_id=tg_id)
-    # if aa[0] != cc[2]:
-    #     products = db.select_product(category_id=category_id)
-
-
     await query.answer('Barcha mavjud mahsulotlar')
     await view_products(query.message,products)
 

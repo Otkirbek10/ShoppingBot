@@ -31,3 +31,9 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.product
+
+class Orders(models.Model):
+    tg_id = models.IntegerField()
+    name = models.CharField(max_length=255)
+    phone = models.IntegerField()
+    product = models.CharField(max_length=255,verbose_name='Product nomi')

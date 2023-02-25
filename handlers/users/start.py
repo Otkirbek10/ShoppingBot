@@ -28,20 +28,28 @@ async def cmd_start(message: types.Message):
 
     await message.answer(f"👋 Salom {message.from_user.full_name}! 🤖 Men sizning botingizman \n\n Meni admin rejimida sozlashni unutmang!", reply_markup=markup)
 
-@dp.message_handler(text=user_message,user_id = config.ADMINS)
+@dp.message_handler(IsAdmin(),text=user_message)
 async def on_user(message:types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
     markup.add(menu)
     markup.add(delivery_status,cart)
     await message.answer('Foydalanuvchi rejimi yoqildi',reply_markup=markup)
 
-@dp.message_handler(text=admin_message,user_id = config.ADMINS)
+    tg_id = message.chat.id
+    if tg_id in config.ADMINS:
+        config.ADMINS.remove(tg_id)
+
+@dp.message_handler(IsAdmin(),text=admin_message)
 async def on_user(message:types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
     markup.add(settings)
     markup.add(questions, orders)
     markup.add(user_message)
     await message.answer('Admin rejimi yoqildi',reply_markup=markup)
+
+    tg_id = message.chat.id
+    if tg_id not in config.ADMINS:
+        config.ADMINS.append(tg_id)
 
 
 @dp.message_handler(CommandStart())
