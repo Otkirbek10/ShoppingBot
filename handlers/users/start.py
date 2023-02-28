@@ -11,15 +11,15 @@ from loader import dp, db, bot
 user_message = '🙎‍♂️ Foydalanuvchi'
 admin_message = '👨‍🔧 Admin'
 
-menu  = '📖 Меню'
-cart = '🛒 Корзина'
-delivery_status = '🚚 Статус заказа'
+menu  = '📖 Menyu'
+cart = '🛒 Korzina'
+delivery_status = '🚚 Buyurtma holati'
 
-settings = '⚙️ Настройка каталога'
-orders = '🚚 Заказы'
-questions = '❓ Вопросы'
+settings = '⚙️ Katalog sozlamalari'
+orders = '🚚 Buyurtmalar'
+questions = '❓ Savollar'
 
-@dp.message_handler(IsAdmin(),commands='start')
+@dp.message_handler(IsAdmin(),commands='start',state='*')
 async def cmd_start(message: types.Message):
 
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)

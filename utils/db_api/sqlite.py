@@ -125,16 +125,6 @@ class Database:
 
         return self.execute(sql, parameters=parameters, fetchall=True)
 
-    # def select_products(self, **kwargs):
-    #     sql = '''SELECT * FROM mod_product product
-    # WHERE product.category_id = (SELECT id FROM mod_category WHERE id=?) 
-    # AND product.id NOT IN (SELECT product FROM mod_cart WHERE tg_id = ?)'''
-    #     # sql = 'SELECT * FROM mod_product m_p LEFT JOIN mod_cart m_c ON m_c.product = m_p.id WHERE category_id = ? AND m_c.tg_id = ? AND m_c.product IS NOT NULL'
-    #     # sql = ('SELECT * FROM mod_product product WHERE product.category_id = (SELECT id FROM mod_category WHERE id=?) AND product.id NOT IN (SELECT id FROM cart WHERE tg_id = ?')
-    #     sql, parameters = self.format_args(sql, kwargs)
-
-        # return self.execute(sql, parameters=parameters, fetchall=True)
-
     def select_for_cart(self, **kwargs):
         sql = "SELECT * FROM mod_product WHERE "
         sql, parameters = self.format_args(sql, kwargs)
@@ -157,6 +147,12 @@ class Database:
     def select_all_categories(self):
         sql = """
         SELECT * FROM mod_category
+        """
+        return self.execute(sql, fetchall=True)
+    
+    def select_orders(self):
+        sql = """
+        SELECT * FROM mod_orders
         """
         return self.execute(sql, fetchall=True)
 

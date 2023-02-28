@@ -2,7 +2,7 @@ from loader import dp,db,bot
 from aiogram.types import ContentType,ReplyKeyboardMarkup,KeyboardButton,ReplyKeyboardRemove,InlineKeyboardButton,InlineKeyboardMarkup,CallbackQuery,Message
 from filters import IsUser,IsAdmin
 from aiogram.utils.callback_data import CallbackData
-from .menu import cart
+# from .menu import cart
 from keyboards.default.button import * 
 from aiogram.dispatcher import FSMContext
 from states.state import Checkout
@@ -12,7 +12,7 @@ import sqlite3
 con = sqlite3.connect("main/db.sqlite3")
 cur = con.cursor()
 
-
+cart = '🛒 Korzina'
 
 @dp.message_handler(IsUser(),text=cart)
 async def cartr(message:Message,state:FSMContext):
@@ -45,7 +45,7 @@ async def cartr(message:Message,state:FSMContext):
                     data['products'][product_id] = [name, price, count_in_cart]
 
                 markup = product_markup(product_id, count_in_cart)
-                text = f"<b>{name}</b>\n\n{description}\n\nNarxi: {price}so'm."
+                text = f"<b>{name}</b>\n\n{description}\n\nNarxi: {price} so'm."
 
                 await message.answer_photo(photo=photo,
                                            caption=text,
@@ -57,6 +57,8 @@ async def cartr(message:Message,state:FSMContext):
             markup.add(back)
             await message.answer("Rasmiylashtirishga o'tmoqchimisiz?",
                                  reply_markup=markup)
+        else:
+            await message.answer("Korzinangiz bo'sh,keling uni birgalikda to'ldiramiz ",reply_markup=cart_bak)
 
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='count'))
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='increase'))
@@ -230,7 +232,7 @@ async def procces_confirm_back(message:Message,state:FSMContext):
 @dp.message_handler(IsUser(),text=confirm_message,state=Checkout.confirm)
 async def procces_confirm(message:Message,state:FSMContext):
     tg_id = message.from_user.id
-    await message.answer('Buyurtmangiz tasdiqlandi! Tez orada uni qabul qilib oling',reply_markup=cart_bak)
+    await message.answer('Buyurtmangiz tasdiqlandi! Tez orada uni qabul qilib oling 🚀',reply_markup=cart_bak)
     async with state.proxy() as data:
         name = data['name']
         location_lat = data['location_latitude']
@@ -245,6 +247,7 @@ async def procces_confirm(message:Message,state:FSMContext):
 
     answer = ''
     total_price = 0
+    total_name = ''
 
     async with state.proxy() as data:
 
@@ -253,13 +256,15 @@ async def procces_confirm(message:Message,state:FSMContext):
             tp = count_in_cart * price
             answer += f"<b>{title}</b> * {count_in_cart} dona. = {tp} so'm\n"
             total_price += tp
-
+            total_name +=title + ','
+            
+        db.add_to_order(tg_id=tg_id,name=first_n,phone=contact,product=total_name)
 
         await bot.send_contact(5012333108,contact,first_name=first_n)
         await bot.send_location(5012333108,latitude=location_lat,longitude=location_long)
-        await bot.send_message(5012333108,f"<b>{name}</b> ning buyurtmalari:\n{answer}\n Buyurtmaning umumiy narxi: {total_price} so'm",reply_markup=markup)
+        await bot.send_message(5012333108,f"<b>{name}</b> ning buyurtmalari:\n\n{answer}\n Buyurtmaning umumiy narxi: {total_price} so'm",reply_markup=markup)
 
-        db.add_to_order(tg_id=tg_id,name=first_n,phone=contact,product=title)
+
         db.delete_confirm_cart(tg_id=tg_id)
         await state.finish()
 
@@ -268,10 +273,6 @@ async def procces_confirm(message:Message,state:FSMContext):
 async def adding_order(query: CallbackQuery):
     await query.answer('Buyurtmani tasdiqladingiz!')
     await query.message.delete_reply_markup()
-        # await bot.send_message(5012333108,f"{name} ning buyurtma qilgan mahsulotlari: {products}")
-        # await bot.send_location(5012333108,latitude=location_lat,longitude=location_long)
-        # await bot.send_contact(5012333108,contact,first_name=first_n)
-        # # await bot.send_message(5012333108) 
 
 
 

@@ -10,12 +10,19 @@ con = sqlite3.connect("main/db.sqlite3")
 cur = con.cursor()
 
 
-menu  = '📖 Меню'
-cart = '🛒 Корзина'
-settings = '⚙️ Настройка каталога'
-orders = '🚚 Заказы'
-questions = '❓ Вопросы'
-delivery_status = '🚚 Статус заказа'
+menu  = '📖 Menyu'
+cart = '🛒 Korzina'
+settings = '⚙️ Katalog sozlamalari'
+orders = '🚚 Buyurtmalar'
+questions = '❓ Savollar'
+about = 'ℹ️ Biz haqimizda' 
+
+@dp.message_handler(commands='menu',state='*')
+async def menu_comand(message:Message):
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
+    keyboard.add(menu)
+    keyboard.add(about,cart)
+    await message.answer('Menyu',reply_markup=keyboard)
 
 @dp.message_handler(IsUser(), text=menu)
 async def view_menu(message:Message):
@@ -26,9 +33,6 @@ async def set_products(query: CallbackQuery, callback_data: dict):
     id = callback_data['id']
     tg_id = query.message.chat.id
 
-    # print(tg_id,category_id)
-
-    # products = db.select_product(category_id = id,tg_id=t_id)
     product = cur.execute('''SELECT * FROM mod_product
     WHERE id NOT IN (SELECT product FROM mod_cart WHERE tg_id=?)
     AND category_id=? ''',(tg_id,callback_data['id']))
@@ -72,7 +76,7 @@ async def add_product(query: CallbackQuery, callback_data: dict):
 async def back_cat(call:CallbackQuery):
     markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(menu)
-    markup.row(delivery_status,cart)
+    markup.row(about,cart)
 
     await call.message.delete()
     await call.message.answer('Menyu',reply_markup=markup)

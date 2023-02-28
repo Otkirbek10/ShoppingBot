@@ -6,9 +6,9 @@ admin_confirm = "✅ Hammasi to'gri"
 confirm_message = "✅ Buyurtmani tasdiqlash"
 share_contact = 'Telefon raqamni yuborish'
 
-menu  = '📖 Меню'
-cart = '🛒 Корзина'
-delivery_status = '🚚 Статус заказа'
+menu  = '📖 Menyu'
+cart = '🛒 Korzina'
+delivery_status = '🚚 Buyurtma holati'
 
 cart_bak = ReplyKeyboardMarkup(
     keyboard=[
