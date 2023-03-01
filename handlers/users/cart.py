@@ -159,7 +159,7 @@ async def prosecc_name(message:Message,state:FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
 
-    await message.answer('📍 Lokatsiyangizni yuboring!!',reply_markup=back_loco)
+    await message.answer('Manzilingizni yozing.',reply_markup=back_markup)
     await Checkout.next()
 
 
@@ -172,11 +172,23 @@ async def back_loc(message:Message,state:FSMContext):
             await message.answer(f"Ismingizni <i> {imy} </i> dan o'zgartirmoqchimisiz?",reply_markup=back_markup)
             await Checkout.name.set()
     else:
-        await message.answer('Lokatsiyangizni pastdagi tugma orqali yuboring!',reply_markup=back_loco)
+        # await message.answer('Lokatsiyangizni pastdagi tugma orqali yuboring!',reply_markup=back_loco)
+        async with state.proxy() as data:
+            data['addres'] = message.text
+            await message.answer('Lokatsiyangizni pastdagi tugma orqali yuboring!',reply_markup=back_loco)
+            await Checkout.next()
+
+@dp.message_handler(IsUser(),text = back,state=Checkout.location)
+async def again_address(message:Message,state:FSMContext):
 
 
+    async with state.proxy() as data:
+        old_address = data['addres']
+        await message.answer(f"Manzilingizni <i>{old_address}</i> dan o'zgartirmoqchimisiz?")
+        await Checkout.addres.set()
 
-@dp.message_handler(IsUser(),content_types=ContentType.LOCATION,state=Checkout.addres)
+
+@dp.message_handler(IsUser(),content_types=ContentType.LOCATION,state=Checkout.location)
 async def get_location(message:Message,state:FSMContext):
     lat = message.location.latitude
     long = message.location.longitude
@@ -235,6 +247,7 @@ async def procces_confirm(message:Message,state:FSMContext):
     await message.answer('Buyurtmangiz tasdiqlandi! Tez orada uni qabul qilib oling 🚀',reply_markup=cart_bak)
     async with state.proxy() as data:
         name = data['name']
+        addres = data['addres']
         location_lat = data['location_latitude']
         location_long = data['location_longitude']
         contact = data['contact']
@@ -262,7 +275,7 @@ async def procces_confirm(message:Message,state:FSMContext):
 
         await bot.send_contact(5012333108,contact,first_name=first_n)
         await bot.send_location(5012333108,latitude=location_lat,longitude=location_long)
-        await bot.send_message(5012333108,f"<b>{name}</b> ning buyurtmalari:\n\n{answer}\n Buyurtmaning umumiy narxi: {total_price} so'm",reply_markup=markup)
+        await bot.send_message(5012333108,f"<b>{name}</b> ning buyurtmalari:\n\n{answer}\nManzil: {addres}\n\nBuyurtmaning umumiy narxi: {total_price} so'm",reply_markup=markup)
 
 
         db.delete_confirm_cart(tg_id=tg_id)

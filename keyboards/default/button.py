@@ -8,12 +8,12 @@ share_contact = 'Telefon raqamni yuborish'
 
 menu  = '📖 Menyu'
 cart = '🛒 Korzina'
-delivery_status = '🚚 Buyurtma holati'
+about = 'ℹ️ Biz haqimizda'
 
 cart_bak = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text=menu)],
-        [KeyboardButton(text=delivery_status),KeyboardButton(text=cart)],
+        [KeyboardButton(text=about),KeyboardButton(text=cart)],
     ],
     resize_keyboard=True,
     selective=True

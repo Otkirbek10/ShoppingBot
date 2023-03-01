@@ -15,5 +15,6 @@ class Checkout(StatesGroup):
     check_cart = State()
     name = State()
     addres = State()
+    location = State()
     phone = State()
     confirm = State()

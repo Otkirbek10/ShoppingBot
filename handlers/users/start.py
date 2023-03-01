@@ -13,7 +13,7 @@ admin_message = '👨‍🔧 Admin'
 
 menu  = '📖 Menyu'
 cart = '🛒 Korzina'
-delivery_status = '🚚 Buyurtma holati'
+about = 'ℹ️ Biz haqimizda' 
 
 settings = '⚙️ Katalog sozlamalari'
 orders = '🚚 Buyurtmalar'
@@ -32,7 +32,7 @@ async def cmd_start(message: types.Message):
 async def on_user(message:types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
     markup.add(menu)
-    markup.add(delivery_status,cart)
+    markup.add(about,cart)
     await message.answer('Foydalanuvchi rejimi yoqildi',reply_markup=markup)
 
     tg_id = message.chat.id
@@ -63,7 +63,7 @@ async def bot_start(message: types.Message):
                     name=name,user_name=usr)
         markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
         markup.add(menu)
-        markup.add(delivery_status,cart)
+        markup.add(about,cart)
         await message.answer(f"👋 {name}.\n\n🤖 Men Damir Marketning har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> bosing!!",parse_mode='Html',reply_markup=markup)
 
         # Adminga xabar beramiz
@@ -74,6 +74,6 @@ async def bot_start(message: types.Message):
     except sqlite3.IntegrityError as err:
         markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
         markup.add(menu)
-        markup.add(delivery_status,cart)
+        markup.add(about,cart)
         await bot.send_message(chat_id=ADMINS[0], text=f"{name} bazaga oldin qo'shilgan")
         await message.answer(f"👋 {name}.\n\n🤖 Men Damir Marketning har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> ni bosing",parse_mode='HTML',reply_markup=markup)
