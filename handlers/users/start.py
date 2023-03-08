@@ -1,3 +1,4 @@
+
 import sqlite3
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
@@ -51,7 +52,6 @@ async def on_user(message:types.Message):
     if tg_id not in config.ADMINS:
         config.ADMINS.append(tg_id)
 
-
 @dp.message_handler(CommandStart())
 async def bot_start(message: types.Message):
     name = message.from_user.full_name
@@ -64,7 +64,7 @@ async def bot_start(message: types.Message):
         markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
         markup.add(menu)
         markup.add(about,cart)
-        await message.answer(f"👋 {name}.\n\n🤖 Men Damir Marketning har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> bosing!!",parse_mode='Html',reply_markup=markup)
+        await message.answer(f"👋 {name}.\n\n🤖 Men  har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> bosing!!",parse_mode='Html',reply_markup=markup)
 
         # Adminga xabar beramiz
         count = db.count_users()[0]
@@ -76,4 +76,4 @@ async def bot_start(message: types.Message):
         markup.add(menu)
         markup.add(about,cart)
         await bot.send_message(chat_id=ADMINS[0], text=f"{name} bazaga oldin qo'shilgan")
-        await message.answer(f"👋 {name}.\n\n🤖 Men Damir Marketning har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> ni bosing",parse_mode='HTML',reply_markup=markup)
+        await message.answer(f"👋 {name}.\n\n🤖 Men  har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> ni bosing",parse_mode='HTML',reply_markup=markup)

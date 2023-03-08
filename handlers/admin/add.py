@@ -9,7 +9,6 @@ from data.config import ADMINS
 from aiogram.types.chat import ChatActions
 from aiogram.types import InlineKeyboardMarkup,InlineKeyboardButton,Message,CallbackQuery,ReplyKeyboardMarkup,ReplyKeyboardRemove,ContentType
 from states.state import CategoryState,ProductState
-from hashlib import md5
 
 category_cb = CallbackData('category', 'id', 'action')
 product_cb = CallbackData('product', 'id', 'action')
@@ -18,13 +17,15 @@ add_category = "➕ Kategoriya qo'shish"
 
 add_product = "➕ Mahsulot qo'shish"
 delete_category = "🗑️ Kategoriyani o'chirish"
+back_cat = "🔙 Orqaga"
+
 
 category = db.select_all_categories()
 
 @dp.message_handler(IsAdmin(),text=settings)
 async def process_settings(message:Message):
     markup = InlineKeyboardMarkup()
-    global category
+    # global category
     for id,name in db.select_all_categories():
         markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
 
@@ -236,6 +237,19 @@ async def view_products(msg, products, category_id):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(add_product)
     markup.add(delete_category)
+    markup.add(back_cat)
 
     await msg.answer("Nimadir qo'shishni yoki o'chirishni xohlaysizmi?", reply_markup=markup)
+
+@dp.message_handler(IsAdmin(),text=back_cat)
+async def back_cat_view(message:Message):
+    await message.answer(text='Kategoriyalar',reply_markup=ReplyKeyboardRemove())
+    markup = InlineKeyboardMarkup()
+    for id,name in db.select_all_categories():
+        markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
+
+    markup.add(InlineKeyboardButton(add_category,callback_data='add_category'))
+
+    await message.answer('Kategoriya sozlamalari:',reply_markup=markup)
+
 

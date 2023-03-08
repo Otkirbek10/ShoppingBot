@@ -50,7 +50,7 @@ async def view_products(msg, products):
 
     else:
 
-        await bot.send_chat_action(msg.chat.id, ChatActions.TYPING)
+        # await bot.send_chat_action(msg.chat.id, ChatActions.TYPING)
 
         for id, name, photo, description, price, pid in products:
             print(id, name, photo, description, price, pid)

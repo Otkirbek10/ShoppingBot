@@ -19,7 +19,7 @@ async def booking_answer(message,booking):
     msg = ''
 
     for id,tg_id,name,phone,products in booking:
-        msg +=f"№<a href='https://www.bota.com'>{id}</a>,Buyurtmachi: <i>{name}</i>,Mahsulotlar: <b>{products}</b>\n"
+        msg +=f"№<a href='#####'>{id}</a>,Buyurtmachi: <i>{name}</i>,Mahsulotlar: <b>{products}</b>\n"
     
     await message.answer(msg)
-
+ 

@@ -120,10 +120,12 @@ async def checkout(message,state):
 
     async with state.proxy() as data:
         for title, price, count_in_cart in data['products'].values():
-
-            tp = count_in_cart * price
-            msg += f"<b>{title}</b> * {count_in_cart} dona. = {tp} so'm\n"
-            total_price += tp
+            if count_in_cart == 0:
+                pass
+            else:
+                tp = count_in_cart * price
+                msg += f"<b>{title}</b> * {count_in_cart} dona. = {tp} so'm\n"
+                total_price += tp
 
     await message.answer(f"{msg}\nBuyurtmaning umumiy narxi: {total_price} so'm.",
                          reply_markup=conf_markup())
