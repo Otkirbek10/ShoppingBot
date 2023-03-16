@@ -1,6 +1,5 @@
 from aiogram.types import Message,CallbackQuery,ReplyKeyboardMarkup
 from loader import dp,db,bot
-from aiogram.types.chat import ChatActions
 from keyboards.inline.products import products_markup,product_cb
 from keyboards.inline.category import create_category,category_cb
 from filters import IsUser

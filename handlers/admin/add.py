@@ -73,7 +73,7 @@ async def delete_categorys(message: types.Message,state:FSMContext):
             id = data['category_index']
             db.delete_product_for_category(category_id=id)
             db.delete_category(id=id)
-            await message.answer("Kategoriya o'chirildi!!",reply_markup=ReplyKeyboardRemove())
+            await message.answer("Kategoriya o'chirildi.",reply_markup=ReplyKeyboardRemove())
             await process_settings(message)
 
 
@@ -221,7 +221,6 @@ async def delete_product_callback_handler(query: CallbackQuery, callback_data: d
 
 async def view_products(msg, products, category_id):
 
-    await bot.send_chat_action(msg.chat.id, ChatActions.TYPING)
 
     for id, name, photo, description, price,cc  in products:
 

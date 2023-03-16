@@ -58,7 +58,7 @@ async def cartr(message:Message,state:FSMContext):
             await message.answer("Rasmiylashtirishga o'tmoqchimisiz?",
                                  reply_markup=markup)
         else:
-            await message.answer("Korzinangiz bo'sh,keling uni birgalikda to'ldiramiz ",reply_markup=cart_bak)
+            await message.answer("Korzinangiz bo'sh,keling uni birgalikda to'ldiramiz 🤗 ",reply_markup=cart_bak)
 
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='count'))
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='increase'))
@@ -86,6 +86,7 @@ async def product_callback_handler(query: CallbackQuery, callback_data: dict, st
             
             else:
                 data['products'][id][2] += 1 if 'increase' == action else -1
+                
                 count_in_cart = data['products'][id][2]
 
                 if count_in_cart == 0:
