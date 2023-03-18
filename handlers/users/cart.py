@@ -131,9 +131,11 @@ async def checkout(message,state):
     await message.answer(f"{msg}\nBuyurtmaning umumiy narxi: {total_price} so'm.",
                          reply_markup=conf_markup())
 
+
 @dp.message_handler(IsUser(),lambda message: message.text not in [admin_confirm,back],state=Checkout.check_cart)
 async def not_in_list(message:Message,state:FSMContext):
     await message.answer("Iltimos quydagilardan birini tanlang")
+
 
 @dp.message_handler(IsUser(),text=back,state=Checkout.check_cart)
 async def back_check(message:Message,state:FSMContext):
@@ -187,7 +189,7 @@ async def again_address(message:Message,state:FSMContext):
 
     async with state.proxy() as data:
         old_address = data['addres']
-        await message.answer(f"Manzilingizni <i>{old_address}</i> dan o'zgartirmoqchimisiz?")
+        await message.answer(f"Manzilingizni <i>{old_address}</i> dan o'zgartirmoqchimisiz?",reply_markup=ReplyKeyboardRemove())
         await Checkout.addres.set()
 
 
