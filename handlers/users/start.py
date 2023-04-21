@@ -4,7 +4,6 @@ from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import ReplyKeyboardMarkup
 from data import config
-# from aiogram.dispatcher.filters import
 from filters import IsAdmin
 from data.config import ADMINS
 from loader import dp, db, bot
