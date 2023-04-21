@@ -13,3 +13,11 @@ def create_category():
         markup.add(InlineKeyboardButton(name,callback_data=category_cb.new(id=id,action = 'watch')))
     markup.add(InlineKeyboardButton(text='🔙 Orqaga',callback_data='back'))
     return markup
+
+
+def aksiya_markup(name,url):
+
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(f'{name}', callback_data=f"{url}"))
+
+    return markup

@@ -10,6 +10,13 @@ menu  = '📖 Menyu'
 cart = '🛒 Korzina'
 about = 'ℹ️ Biz haqimizda'
 
+aksiya = "🎉 Aksiya qo'shish"
+settings = '⚙️ Katalog sozlamalari'
+orders = '🚚 Buyurtmalar'
+questions = '❓ Savollar'
+
+user_message = '🙎‍♂️ Foydalanuvchi'
+
 cart_bak = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text=menu)],
@@ -58,3 +65,11 @@ def confirm_markup():
 
     return markup
 
+menu_aks = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text=settings)],
+        [KeyboardButton(text=questions),KeyboardButton(text=orders)],
+        [KeyboardButton(text=aksiya),KeyboardButton(text=user_message)],
+    ],
+    resize_keyboard=True
+)

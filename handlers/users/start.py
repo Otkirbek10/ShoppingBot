@@ -15,7 +15,7 @@ admin_message = '👨‍🔧 Admin'
 menu  = '📖 Menyu'
 cart = '🛒 Korzina'
 about = 'ℹ️ Biz haqimizda' 
-
+aksiya = "🎉 Aksiya qo'shish"
 settings = '⚙️ Katalog sozlamalari'
 orders = '🚚 Buyurtmalar'
 questions = '❓ Savollar'
@@ -45,7 +45,7 @@ async def on_user(message:types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
     markup.add(settings)
     markup.add(questions, orders)
-    markup.add(user_message)
+    markup.add(aksiya,user_message)
     await message.answer('Admin rejimi yoqildi',reply_markup=markup)
 
     tg_id = message.chat.id
@@ -67,13 +67,13 @@ async def bot_start(message: types.Message):
         await message.answer(f"👋 {name}.\n\n🤖 Men  har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> bosing!!",parse_mode='Html',reply_markup=markup)
 
         # Adminga xabar beramiz
-        count = db.count_users()[0]
-        msg = f"{message.from_user.full_name} bazaga qo'shildi.\nBazada {count} ta foydalanuvchi bor."
-        await bot.send_message(chat_id=ADMINS[0], text=msg)
+        # count = db.count_users()[0]
+        # msg = f"{message.from_user.full_name} bazaga qo'shildi.\nBazada {count} ta foydalanuvchi bor."
+        # await bot.send_message(chat_id=ADMINS[0], text=msg)
 
     except sqlite3.IntegrityError as err:
         markup = ReplyKeyboardMarkup(resize_keyboard=True,selective=True)
         markup.add(menu)
         markup.add(about,cart)
-        await bot.send_message(chat_id=ADMINS[0], text=f"{name} bazaga oldin qo'shilgan")
+        # await bot.send_message(chat_id=ADMINS[0], text=f"{name} bazaga oldin qo'shilgan")
         await message.answer(f"👋 {name}.\n\n🤖 Men  har qanday toifadagi tovarlarni sotish uchun bot-do'konman.!\n\nDavom etish uchun <b>Menu</b> ni bosing",parse_mode='HTML',reply_markup=markup)
